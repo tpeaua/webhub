@@ -2,7 +2,7 @@
 
 const {
   app, BrowserWindow, ipcMain, session, Tray, Menu,
-  nativeImage, dialog, shell,
+  nativeImage, dialog,
 } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
@@ -246,9 +246,21 @@ function appWindow(a) {
     },
   });
 
-  // Open target=_blank / popups in the default browser instead of new windows.
+  // Keep sign-in/SSO popups (e.g. Microsoft Teams, Google) INSIDE the app so
+  // the session cookie is stored in this app's isolated session and the login
+  // completes. Sending them to the default browser broke sign-in.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\/\//i.test(url)) shell.openExternal(url);
+    if (/^https?:\/\//i.test(url)) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          width: 980,
+          height: 720,
+          autoHideMenuBar: true,
+          webPreferences: { partition, contextIsolation: true, nodeIntegration: false },
+        },
+      };
+    }
     return { action: 'deny' };
   });
 

@@ -26,7 +26,7 @@ HELPER_APPS = (
 )
 
 MAIN_TEMPLATE = r"""'use strict';
-const { app, BrowserWindow, session, Menu, shell, systemPreferences } = require('electron');
+const { app, BrowserWindow, session, Menu, systemPreferences } = require('electron');
 
 const APP_URL = @@URL@@;
 const APP_NAME = @@NAME@@;
@@ -76,7 +76,20 @@ function createWindow() {
   });
 
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\/\//i.test(url)) shell.openExternal(url);
+    // Keep sign-in/SSO popups (e.g. Microsoft Teams, Google) INSIDE the app so
+    // the session cookie is stored here and the login completes. Sending them
+    // to the default browser broke sign-in.
+    if (/^https?:\/\//i.test(url)) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          width: 980,
+          height: 720,
+          autoHideMenuBar: true,
+          webPreferences: { contextIsolation: true, nodeIntegration: false },
+        },
+      };
+    }
     return { action: 'deny' };
   });
 
