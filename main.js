@@ -44,6 +44,8 @@ const SEED_APPS = [
   { id: 'outlook-hotmail', name: 'Outlook (Hotmail)',  url: 'https://outlook.live.com/mail/', profile: 'work',    color: '#0078D4' },
   { id: 'gmail-personal',  name: 'Gmail (Personal)',   url: 'https://mail.google.com',       profile: 'personal', color: '#EA4335' },
   { id: 'yahoo-mail',      name: 'Yahoo Mail',         url: 'https://mail.yahoo.com',        profile: 'personal', color: '#6001D2' },
+  { id: 'speedtest',       name: 'SpeedTest',          url: 'https://www.speedtest.net',     profile: 'personal', color: '#E91E63' },
+  { id: 'messenger',       name: 'Messenger',          url: 'https://www.messenger.com',     profile: 'personal', color: '#2C3E50' },
 ];
 
 const PALETTE = [

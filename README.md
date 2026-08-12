@@ -4,8 +4,8 @@
 
 WebHub is a free, open-source alternative to subscription web-app wrappers
 like WebCatalog. It wraps the *web* versions of the apps you rely on —
-Microsoft Teams, WhatsApp, ChatGPT, Gmail, Outlook/Hotmail, Yahoo Mail, and
-anything else — into proper desktop apps, each with its own icon, Dock
+Microsoft Teams, WhatsApp, Messenger, ChatGPT, Gmail, Outlook/Hotmail,
+Yahoo Mail, Speedtest, and anything else — into proper desktop apps, each with its own icon, Dock
 presence, isolated login, and notifications.
 
 It exists for a real problem: **modern apps keep dropping support for macOS
