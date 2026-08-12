@@ -17,6 +17,13 @@ const SMOKE = process.argv.includes('--smoke');
 app.setName('WebHub');
 app.setPath('userData', path.join(app.getPath('appData'), 'WebHub'));
 
+// --- Low-end tuning (must run before Chromium spawns any process) ----------
+// This iMac has limited RAM/CPU and no Metal GPU driver, so every process
+// counts. These switches trim per-renderer memory and compositing work.
+app.commandLine.appendSwitch('enable-low-end-device-mode');            // Chromium "low-memory" mode
+app.commandLine.appendSwitch('disable-smooth-scrolling');              // less compositing work
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=1024'); // cap each renderer's JS heap at 1 GB
+
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
@@ -115,6 +122,7 @@ function loadConfig() {
   // This iMac's Intel iGPU has no Metal/GL driver on Monterey, so software
   // rendering is the reliable default. Users can flip it in the tray menu.
   if (config.gpuDisabled === undefined) config.gpuDisabled = true;
+  if (config.lowMemoryMode === undefined) config.lowMemoryMode = false;
   saveConfig();
 }
 
@@ -242,6 +250,7 @@ function appWindow(a) {
       partition,
       contextIsolation: true,
       nodeIntegration: false,
+      spellcheck: false,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
@@ -257,7 +266,7 @@ function appWindow(a) {
           width: 980,
           height: 720,
           autoHideMenuBar: true,
-          webPreferences: { partition, contextIsolation: true, nodeIntegration: false },
+          webPreferences: { partition, contextIsolation: true, nodeIntegration: false, spellcheck: false },
         },
       };
     }
@@ -275,11 +284,13 @@ function appWindow(a) {
 
   // Closing hides to background (keeps notifications flowing) unless quitting.
   win.on('close', (e) => {
-    if (!isQuitting && !closingForced.has(a.id)) {
-      e.preventDefault();
-      win.hide();
-      refreshTray();
-    }
+    // Low-memory mode: actually destroy hidden windows to free RAM. The login
+    // session lives in the persistent partition, so reopening re-navigates and
+    // stays signed in — only in-page state (e.g. an unsent draft) is lost.
+    if (isQuitting || closingForced.has(a.id) || config.lowMemoryMode) return;
+    e.preventDefault();
+    win.hide();
+    refreshTray();
   });
   win.on('closed', () => {
     closingForced.delete(a.id);
@@ -325,6 +336,7 @@ function createLauncher() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      spellcheck: false,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
@@ -363,6 +375,15 @@ function refreshTray() {
         { label: 'Quit app', click: () => forceClose(a.id) },
       ],
     })),
+    { label: 'Quit all apps', click: () => { for (const id of [...windows.keys()]) forceClose(id); } },
+    {
+      label: (config.lowMemoryMode ? '✓ ' : '') + 'Low-memory mode (close apps when hidden)',
+      click: () => {
+        config.lowMemoryMode = !config.lowMemoryMode;
+        saveConfig();
+        refreshTray();
+      },
+    },
     { type: 'separator' },
     {
       label: config.gpuDisabled ? 'Enable graphics acceleration' : 'Disable graphics acceleration',
@@ -493,7 +514,7 @@ function registerIpc() {
 // Smoke test (verifies Electron + renderer run on this Mac)
 // ---------------------------------------------------------------------------
 function runSmokeTest() {
-  const win = new BrowserWindow({ show: false, width: 400, height: 300 });
+  const win = new BrowserWindow({ show: false, width: 400, height: 300, webPreferences: { spellcheck: false } });
   win.webContents.on('did-finish-load', () => {
     console.log('SMOKE_OK');
     setTimeout(() => { isQuitting = true; app.quit(); }, 300);

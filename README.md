@@ -43,6 +43,9 @@ those web apps into native-feeling desktop apps.
   when the iGPU has no Metal driver (e.g. OpenCore Legacy Patcher).
 - **Auto-rebuild** — add an app in the manager and its icon is generated and
   pushed to Launchpad automatically.
+- **Low-memory mode** — a tray toggle that frees RAM by actually closing
+  hidden apps (you stay signed in, so reopening is instant), plus
+  per-renderer memory caps tuned for older Macs.
 
 ## How it works
 
@@ -126,15 +129,17 @@ maintainers:
 ## Notes & limitations
 
 - **Each running app is a full Chromium process** (~150–400 MB), the same as
-  WebCatalog/Nativefier. On an 8 GB Mac, don't run *all* apps at once — quit
-  (⌘Q) what you're not using.
+  WebCatalog/Nativefier. On an 8 GB Mac, don't run *all* apps at once. Use the
+  tray's **Low-memory mode** (closes hidden apps, keeps you signed in) and
+  **Quit all apps** to reclaim RAM instantly.
 - **Apps are unsigned.** They run locally without Gatekeeper issues, but macOS
   identifies them by path for privacy permissions. Grant mic/camera when
   prompted per app.
 - **On unsupported Intel iGPUs** (no Metal driver), rendering is
   software-based — reliable, but video calls are CPU-heavy.
-- Closing a window **hides** it (so notifications keep flowing); use **⌘Q** to
-  actually quit and free RAM.
+- Closing a window **hides** it by default (so notifications keep flowing);
+  enable **Low-memory mode** from the tray to make closing actually free RAM
+  (you stay signed in — the app just reloads next time you open it).
 
 ## Project layout
 

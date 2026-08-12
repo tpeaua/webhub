@@ -31,6 +31,11 @@ const { app, BrowserWindow, session, Menu, systemPreferences } = require('electr
 const APP_URL = @@URL@@;
 const APP_NAME = @@NAME@@;
 
+// Low-end tuning (mirrors the manager's main.js): cap per-renderer memory and
+// trim compositing work. Must run before Chromium spawns any process.
+app.commandLine.appendSwitch('enable-low-end-device-mode');
+app.commandLine.appendSwitch('disable-smooth-scrolling');
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=1024');
 // This iMac's Intel iGPU has no Metal driver on Monterey -> software rendering.
 app.disableHardwareAcceleration();
 // Present a clean, standard Chrome user agent (drop the app-name and Electron
@@ -72,7 +77,7 @@ function createWindow() {
     show: false,
     autoHideMenuBar: true,
     backgroundColor: '#ffffff',
-    webPreferences: { contextIsolation: true, nodeIntegration: false },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, spellcheck: false },
   });
 
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -86,7 +91,7 @@ function createWindow() {
           width: 980,
           height: 720,
           autoHideMenuBar: true,
-          webPreferences: { contextIsolation: true, nodeIntegration: false },
+          webPreferences: { contextIsolation: true, nodeIntegration: false, spellcheck: false },
         },
       };
     }
