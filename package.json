@@ -1,0 +1,28 @@
+{
+  "name": "webhub",
+  "productName": "WebHub",
+  "version": "1.0.0",
+  "description": "Turn any website into a desktop app — a free, open-source WebCatalog alternative for older Macs (Monterey and earlier)",
+  "main": "main.js",
+  "author": "tpeaua",
+  "license": "MIT",
+  "keywords": [
+    "electron",
+    "web-app",
+    "site-specific-browser",
+    "macos",
+    "monterey",
+    "webcatalog-alternative",
+    "pwa"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron . --smoke",
+    "pack": "electron-packager . WebHub --platform=darwin --arch=x64 --out=dist --overwrite --icon=assets/icon.icns --app-bundle-id=local.webhub",
+    "apps": "python3 make-apps.py"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "43.4.0"
+  }
+}

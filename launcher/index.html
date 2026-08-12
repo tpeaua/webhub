@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebHub</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◧</span>
+      <div>
+        <h1>WebHub</h1>
+        <p id="subtitle">Loading…</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span id="buildStatus" class="status"></span>
+      <button id="rebuildBtn" class="btn" title="Generate a standalone .app with its own icon for every app">🔄 Rebuild apps</button>
+      <button id="addBtn" class="btn primary">＋ Add app</button>
+    </div>
+  </header>
+
+  <main id="grid" class="grid"></main>
+
+  <div id="empty" class="empty hidden">
+    <p>No apps yet.</p>
+    <p class="muted">Click “Add app” to turn a website into a desktop app.</p>
+  </div>
+
+  <!-- Add / edit modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <h2 id="modalTitle">Add app</h2>
+      <form id="form">
+        <label>Name
+          <input id="f-name" type="text" placeholder="WhatsApp" autocomplete="off" required />
+        </label>
+        <label>URL
+          <input id="f-url" type="text" placeholder="https://web.whatsapp.com" autocomplete="off" required />
+        </label>
+        <label>Profile <span class="hint">separate login session (e.g. work / personal)</span>
+          <input id="f-profile" type="text" list="profile-list" placeholder="personal" autocomplete="off" />
+          <datalist id="profile-list"></datalist>
+        </label>
+        <label>Icon URL <span class="hint">optional — auto-fetched if blank</span>
+          <input id="f-icon" type="text" placeholder="https://…/icon.png" autocomplete="off" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" id="cancelBtn" class="btn">Cancel</button>
+          <button type="submit" class="btn primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
